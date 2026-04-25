@@ -45,3 +45,4 @@ gcstm32\main.o: D:\KEIL-MDK\ARM\ARMCC\Bin\..\include\stdio.h
 gcstm32\main.o: ../MDK-ARM/chassis_ctrl.h
 gcstm32\main.o: D:\KEIL-MDK\ARM\ARMCC\Bin\..\include\stdbool.h
 gcstm32\main.o: ../MDK-ARM/openmv_ctrl.h
+gcstm32\main.o: ../MDK-ARM/barcode_scanner.h

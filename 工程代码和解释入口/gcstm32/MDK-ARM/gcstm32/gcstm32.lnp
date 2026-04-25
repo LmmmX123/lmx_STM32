@@ -1,6 +1,8 @@
 --cpu=Cortex-M4.fp
 "gcstm32\startup_stm32f407xx.o"
 "gcstm32\chassis_ctrl.o"
+"gcstm32\openmv_ctrl.o"
+"gcstm32\barcode_scanner.o"
 "gcstm32\main.o"
 "gcstm32\gpio.o"
 "gcstm32\can.o"
@@ -10,7 +12,6 @@
 "gcstm32\usart.o"
 "gcstm32\stm32f4xx_it.o"
 "gcstm32\stm32f4xx_hal_msp.o"
-"gcstm32\openmv_ctrl.o"
 "gcstm32\stm32f4xx_hal_can.o"
 "gcstm32\stm32f4xx_hal_rcc.o"
 "gcstm32\stm32f4xx_hal_rcc_ex.o"

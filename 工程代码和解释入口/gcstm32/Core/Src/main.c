@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include "chassis_ctrl.h" 
 #include "openmv_ctrl.h"
+#include "barcode_scanner.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +71,7 @@ int fputc(int ch, FILE *f) {
     return ch;
 }
 
+
 // ============================================================
 // ?? HARDWARE WIRING GUIDE (Common-Cathode Configuration)
 // ============================================================
@@ -87,6 +89,34 @@ int fputc(int ch, FILE *f) {
 // ============================================================
 
 
+/********************************************************************
+ * Function Call Guide (in main.c)
+ ********************************************************************
+ * 1. chassis_move(float dist_x, float dist_y, float speed)
+ *    - Omnidirectional movement (forward, backward, left, right, diagonal)
+ *    - dist_x:  left(negative) / right(positive), unit: meter
+ *    - dist_y:  backward(negative) / forward(positive), unit: meter
+ *    - speed:   movement speed, recommended: 0.3 ~ 1.2
+ *
+ *    Examples:
+ *    chassis_move(0,    0.5f, 0.8f);   // Move forward 0.5m
+ *    chassis_move(0,   -0.3f, 0.8f);   // Move backward 0.3m
+ *    chassis_move(0.4f, 0,    0.8f);   // Move right 0.4m
+ *    chassis_move(-0.4f,0,    0.8f);   // Move left 0.4m
+ *    chassis_move(0.3f, 0.5f, 0.8f);   // Move forward-right diagonally
+ *
+ * 2. chassis_rotate(int8_t dir, uint16_t angle, float speed)
+ *    - In-place rotation (only 90/180/360 degrees supported)
+ *    - dir:     1 = clockwise,  -1 = counterclockwise, 0 = clockwise
+ *    - angle:   only 90 / 180 / 360
+ *    - speed:   rotation speed, recommended: 0.3 ~ 1.0
+ *
+ *    Examples:
+ *    chassis_rotate(1,   90, 0.8f);    // Rotate 90� clockwise
+ *    chassis_rotate(-1,  90, 0.8f);    // Rotate 90� counterclockwise
+ *    chassis_rotate(1,  180, 0.8f);    // Rotate 180� clockwise
+ *    chassis_rotate(1,  360, 0.8f);    // Rotate 360� clockwise
+ ********************************************************************/
 
 /* USER CODE END 0 */
 
@@ -133,6 +163,7 @@ int main(void)
   MX_UART4_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+	chassis_init();        // ????
 
   /* USER CODE END 2 */
 
@@ -140,6 +171,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		/*
 		uint8_t result = OpenMV_Run_Align(1, 3000);
 
 		if(result == 1)
@@ -151,9 +183,60 @@ int main(void)
 		{
 			// ??:??
 			HAL_UART_Transmit(&huart1, (uint8_t*)"OpenMV TIMEOUT\r\n", 15, HAL_MAX_DELAY);
-		}
+		}*/
+		// Rotate 90 degrees CLOCKWISE
 
-  HAL_Delay(1000);
+		//HAL_Delay(5000);
+		//chassis_rotate(-1, 90, 0.3f);		
+		
+		/*HAL_Delay(5000);
+		chassis_move(1.0f, 0.0f, 0.3f);
+		HAL_Delay(2000);
+		chassis_move(-1.0f, 0.0f, 0.3f);
+		HAL_Delay(2000);
+		chassis_move(0.0f, 1.0f, 0.3f);
+		HAL_Delay(2000);
+		chassis_move(0.0f, -1.0f, 0.3f);
+		HAL_Delay(2000);
+		chassis_rotate(1, 90, 0.1f);
+		HAL_Delay(2000);
+		chassis_rotate(-1, 90, 0.1f);*/
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1500);
+		HAL_Delay(500); // 等待舵机到位
+
+		// 转到15°
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 667);
+		HAL_Delay(500); // 等待舵机到位
+		
+		
+		
+		/*
+		char *barcode = GM65_ScanOnce();
+        
+        // 3. ?????? g_barcode_result(????)
+        if (barcode != NULL)
+        {
+				if (strlen(g_barcode_result) > 10)
+            {
+                HAL_UART_Transmit(&huart1, (uint8_t*)"??????10\r\n", 16, 100);
+            }
+        }
+        else
+        {
+            // ??????,????????,????
+            HAL_UART_Transmit(&huart1, (uint8_t*)"??????\r\n", 12, 100);
+        }
+
+        HAL_Delay(1000);   // ??1?,??????
+    }
+}
+		*/
+		
+		
+		
+		
+		
+		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

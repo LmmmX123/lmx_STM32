@@ -1,40 +1,50 @@
-#ifndef __CHASSIS_CTRL_H
-#define __CHASSIS_CTRL_H
+#ifndef CHASSIS_CTRL_H
+#define CHASSIS_CTRL_H
 
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal.h"  // ????MCU????
+#include <stdint.h>
 #include <stdbool.h>
 
-/* ?????? */
-#define CHASSIS_EN_PORT   GPIOB
-#define CHASSIS_EN_PIN    GPIO_PIN_3
-
-/* ??????? */
+/* ================= ?????? ================= */
 typedef struct {
     GPIO_TypeDef* port;
-    uint16_t pin_pul;
-    uint16_t pin_dir;
+    uint16_t pin_pul;   // ??(PUL)??
+    uint16_t pin_dir;   // ??(DIR)??
 } MotorPin_t;
 
+/* ???????? (??????????) */
 extern const MotorPin_t chassis_motors[4];
 
-/* ???? */
-#define PULSES_PER_REV      400.0f           /* ?????(???????) */
-#define WHEEL_DIAMETER_MM   76.2f            /* ?? mm */
-/* ????? = 400 / (p * ??(?) * 1.04) */
-#define PULSES_PER_METER    (PULSES_PER_REV / (3.14159265f * (WHEEL_DIAMETER_MM / 1000.0f * 1.02f)))
+/* ================= ??????? ================= */
+#define WHEEL_BASE_HALF  0.15f   // ?????? (m)
+#define TRACK_HALF       0.12f   // ?????? (m)
+// ????:?????????? (???????)
+#define ROBOT_RADIUS     sqrtf((WHEEL_BASE_HALF)*(WHEEL_BASE_HALF) + (TRACK_HALF)*(TRACK_HALF))
 
-/* ???????? */
-#define MAX_FREQ_HZ         6000U            /* ?????? */
-#define MIN_FREQ_HZ         300U             /* ???? */
-#define ACC_RATIO           0.5f             /* ?????????? */
+#define PULSES_PER_METER 2000.0f // ????? (?????/??????)
+#define MAX_FREQ_HZ      20000U  // ??????
+#define START_FREQ_HZ    300U    // ??????
+#define ACC_RATIO        0.5f    // ????? (0.2 = 20%????+??)
+#define PULSE_CALIBRATION_FACTOR  0.8333f
 
-/* ???????(20µs,??50kHz????) */
-#define TIM_PERIOD_US       20U
-#define PULSE_WIDTH_US      2U               /* ????2µs(>1.5µs) */
+/* ================= ???? (????) ================= */
+typedef struct {
+    int32_t steps[4];
+    uint32_t abs_steps[4];
+    GPIO_PinState dir[4];
+    uint32_t max_steps;
+    uint32_t current_step;
+    uint32_t target_freq;
+    uint32_t acc_steps;
+    uint32_t dec_start;
+    float freq_now;
+    uint32_t bresenham_err[4];
+    bool is_running;
+} ChassisCtrl_t;
 
-/* ???? */
+/* ================= ???? ================= */
 void chassis_init(void);
-void chassis_move(float dist_x, float dist_y, float speed);
-bool chassis_is_moving(void);
+void chassis_move(float vx, float vy, float speed);   // ????
+void chassis_rotate(int8_t dir, uint16_t angle, float speed); // ????
 
-#endif
+#endif /* CHASSIS_CTRL_H */
